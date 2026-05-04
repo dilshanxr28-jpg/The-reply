@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Journey | Rida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Cinzel', serif; 
+            transition: background 1.5s ease; 
+            min-height: 100vh; 
+            background-color: #FCE4EC; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            color: #4a0404;
+        }
+        
+        .theme-27 { background: linear-gradient(135deg, #4a0404 0%, #2d2d2d 100%) !important; color: #e2e2e2 !important; }
+        .theme-28 { background: linear-gradient(135deg, #001f3f 0%, #660000 100%) !important; color: #FFD700 !important; }
+
+        .glass-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            width: 92%;
+            max-width: 500px;
+            padding: 1.5rem;
+            margin: 20px auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 10px 10px 35px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border-radius: 2px;
+            position: absolute;
+            width: 200px; 
+            transition: all 0.4s ease;
+            cursor: pointer;
+            z-index: 2001;
+            border: 1px solid #ddd;
+        }
+        .polaroid img { 
+            width: 100%; 
+            height: 200px; 
+            object-fit: cover; 
+            border: 1px solid #eee; 
+            display: block; 
+            background: #f0f0f0;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            animation: flyUp 3s linear forwards;
+        }
+        @keyframes flyUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .btn-official {
+            padding: 14px 10px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            transition: 0.3s;
+            cursor: pointer;
+            letter-spacing: 1px;
+            font-size: 0.7rem;
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid currentColor;
+            background: transparent;
+        }
+        .btn-official:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .timer-val { font-size: 1.8rem; display: block; font-weight: bold; }
+        .timer-label { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .hidden-stage { display: none !important; }
+        .fade-in { animation: fadeIn 1s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body id="main-body">
+
+    <div id="gesture-layer" class="fixed inset-0 z-[5000] bg-pink-100 flex items-center justify-center p-6 text-center">
+        <div class="glass-box bg-white/90">
+            <h2 class="mb-6 text-pink-800 font-bold">Welcome to the Journey</h2>
+            <button class="btn-official bg-pink-600 text-white border-none" onclick="unlockAudio()">Enter Experience</button>
+        </div>
+    </div>
+
+    <audio id="audio-phase1" preload="auto" loop><source src="phase1music.mp3" type="audio/mpeg"></audio>
+    <audio id="audio-phase2" preload="auto" loop><source src="phase2music.mp3" type="audio/mpeg"></audio>
+
+    <div class="w-full flex flex-col items-center py-6">
+        
+        <div id="section-countdown" class="glass-box fade-in">
+            <h2 id="timer-title" class="text-center text-xs mb-6 uppercase tracking-widest">Loading The First Surprise</h2>
+            <div id="timer-grid" class="grid grid-cols-4 gap-2 text-center mb-4">
+                <div><span id="days" class="timer-val">00</span><span class="timer-label">Days</span></div>
+                <div><span id="hours" class="timer-val">00</span><span class="timer-label">Hrs</span></div>
+                <div><span id="minutes" class="timer-val">00</span><span class="timer-label">Min</span></div>
+                <div><span id="seconds" class="timer-val">00</span><span class="timer-label">Sec</span></div>
+            </div>
+            
+            <button id="btn-open-27" class="hidden-stage btn-official bg-white text-black" onclick="trigger27th()">Open</button>
+            <button id="btn-reveal-28" class="hidden-stage btn-official bg-red-700 text-white" onclick="trigger28th()">Reveal the Surprise</button>
+        </div>
+
+        <div id="section-27" class="hidden-stage glass-box fade-in">
+            <p class="text-sm italic mb-6 leading-relaxed">
+                "Yayy!! Just a day to go! Soon you would've completed your 17th year and be on a journey of the 18th year! This is just a quite reminder of how amazing and fantabulous you are. I hope that you've enjoyed every bit of your last year, maybe even me. Tomorrow you'll start the journey of next year. I Just want to say, be happy, be as marvelous as you are, and keep smiling, atleast for me. Even if you feel you are in the toughest battle of your life, just smile cause that's the smile I've love. Atleast for me, Be happy. Genuinely. And yes, make sure to check this again tomorrow"
+            </p>
+            <button id="btn-stop-27" class="btn-official" onclick="stop27th()">Thank You Bestie</button>
+            
+            <div id="q27-area" class="hidden-stage mt-8 text-center">
+                <p class="text-xs mb-4 uppercase tracking-widest">Are you excited for tomorrow?</p>
+                <div class="space-y-2">
+                    <button class="btn-official q27-btn" onclick="reply27(this, 'yeah that\'s the spirit!')">Obviously I am</button>
+                    <button class="btn-official q27-btn" onclick="reply27(this, 'wait, what? Why? If something\'s bothering you, you can always reach out to me and talk your heart out. Alright?')">Not sure</button>
+                </div>
+                <p id="reply-text-27" class="mt-6 italic text-yellow-500 text-sm"></p>
+                <button id="wait-btn" class="hidden-stage btn-official bg-pink-700 text-white mt-4" onclick="location.reload()">I'm waiting...</button>
+            </div>
+        </div>
+
+        <div id="section-28" class="hidden-stage glass-box fade-in">
+            <h1 class="font-bold text-lg text-center mb-6 uppercase tracking-tighter">A Very Happy Birthday Rida!!</h1>
+            <div class="text-[11px] space-y-4 leading-relaxed">
+                <p><strong>Finally you've turned 18,</strong> winning a number of hearts, breaking a few, catching all the achievements you can, trying to be the best, but still not too harsh on yourself, there might've been some chaos in your life, some deep joys, but in the end, all that matters is that you are happy and satisfied.</p>
+                <p>This is me wishing you a birthday for the second time but still these 2 years felt like 20 years of connection, but just 2 months of experience. Anyways, Right now, I just want to express what you mean to me. You are the 'Maya' to my 'Wali', 'Junnu' to my 'Seenu', Beginning to my end, the heart to my body and the code for my html.</p>
+                <p>May God bless you not just with a long life but a very Prosperous, Happy, graceful and long life. Just so that you know, all my Du'as start with you, even those 30 days fasting, which was my first time, was for you. You are what Juliet meant to Romeo. All that I pray for is your wellness now. If I had a thousand lives, I would choose you every time, even if this was our story every time. Maybe, Just Maybe we cannot meet in this life but even then, I'll wait for you even after death and maybe in another life we'll meet.</p>
+                <p class="font-bold text-center text-sm mt-6">Again, wishing you a Very Happy Birthday, Mineyy❤️✨</p>
+                <p class="text-right text-yellow-500 font-bold mt-2">— Your Prince Charming</p>
+            </div>
+            
+            <button id="btn-stop-28" class="btn-official border-yellow-500 text-yellow-500 mt-6" onclick="stop28th()">Thank You Prince Charming</button>
+
+            <div id="q28-area" class="hidden-stage mt-8 text-center">
+                <p class="text-xs mb-4 text-yellow-400 uppercase tracking-widest">if there was any chance of us being together, will you accept me?</p>
+                <div class="space-y-2">
+                    <button class="btn-official q28-btn" onclick="finalFinish(this, 'I knew it! thank you Love.')">Definitely sure I will</button>
+                    <button class="btn-official q28-btn" onclick="finalFinish(this, 'Ouch, C\'mon.. please at least confess it today🥺')">Surely but I'm never gonna tell you that</button>
+                    <button class="btn-official q28-btn" onclick="finalFinish(this, 'That hurts, but I guess I can wait till it comes😶')">Maybe in next life?</button>
+                </div>
+                <p id="final-verdict" class="mt-8 text-md text-yellow-500 italic"></p>
+                
+                <button id="outcome-btn" class="hidden-stage btn-official border-yellow-500 text-yellow-400 mt-10" onclick="startPolaroids()">Outcome And After Effects</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="polaroid-overlay" class="hidden-stage fixed inset-0 z-[6000] bg-black/95 flex flex-col items-center justify-center overflow-hidden">
+        <button class="absolute top-10 right-10 text-white text-4xl z-[9000]" onclick="closePolaroids()">✕</button>
+        <div id="polaroid-stack" class="relative w-full h-[80vh] flex items-center justify-center"></div>
+        <p class="mb-8 text-white/70 text-xs uppercase tracking-widest animate-pulse">Tap photos to shuffle</p>
+    </div>
+
+    <script>
+        const date27 = new Date("May 27, 2026 00:00:00").getTime();
+        const date28 = new Date("May 28, 2026 00:00:00").getTime();
+        const song1 = document.getElementById('audio-phase1');
+        const song2 = document.getElementById('audio-phase2');
+
+        function unlockAudio() {
+            song1.play().then(() => { song1.pause(); song1.currentTime = 0; });
+            song2.play().then(() => { song2.pause(); song2.currentTime = 0; });
+            document.getElementById('gesture-layer').style.display = 'none';
+            init();
+        }
+
+        function spawnEmojis(emojiSet) {
+            for(let i=0; i<25; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.innerText = emojiSet[Math.floor(Math.random()*emojiSet.length)];
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.bottom = '-10vh';
+                p.style.fontSize = (Math.random() * 30 + 15) + 'px';
+                p.style.animationDelay = (Math.random() * 1.5) + 's';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3500);
+            }
+        }
+
+        function init() {
+            const now = new Date().getTime();
+            if (now >= date28) {
+                document.getElementById('timer-title').innerText = "Loading The Second Surprise";
+                document.getElementById('timer-grid').classList.add('hidden-stage');
+                document.getElementById('btn-reveal-28').classList.remove('hidden-stage');
+            } else if (now >= date27) {
+                document.getElementById('timer-title').innerText = "Loading The First Surprise";
+                document.getElementById('timer-grid').classList.add('hidden-stage');
+                document.getElementById('btn-open-27').classList.remove('hidden-stage');
+            } else {
+                startCountdown(date27);
+            }
+        }
+
+        function startCountdown(target) {
+            setInterval(() => {
+                const now = new Date().getTime();
+                const gap = target - now;
+                if (gap <= 0) { location.reload(); return; }
+                document.getElementById('days').innerText = Math.floor(gap / 86400000).toString().padStart(2,'0');
+                document.getElementById('hours').innerText = Math.floor((gap % 86400000) / 3600000).toString().padStart(2,'0');
+                document.getElementById('minutes').innerText = Math.floor((gap % 3600000) / 60000).toString().padStart(2,'0');
+                document.getElementById('seconds').innerText = Math.floor((gap % 60000) / 1000).toString().padStart(2,'0');
+            }, 1000);
+        }
+
+        function trigger27th() {
+            spawnEmojis(['🎉','✨','🎊','☀️']);
+            document.getElementById('main-body').className = 'theme-27';
+            song1.play();
+            document.getElementById('section-countdown').classList.add('hidden-stage');
+            document.getElementById('section-27').classList.remove('hidden-stage');
+        }
+
+        function stop27th() {
+            song1.pause();
+            document.getElementById('btn-stop-27').classList.add('hidden-stage');
+            document.getElementById('q27-area').classList.remove('hidden-stage');
+        }
+
+        function reply27(btn, msg) {
+            document.querySelectorAll('.q27-btn').forEach(b => b.disabled = true);
+            btn.style.background = "rgba(255,255,255,0.4)";
+            document.getElementById('reply-text-27').innerText = msg;
+            document.getElementById('wait-btn').classList.remove('hidden-stage');
+        }
+
+        function trigger28th() {
+            spawnEmojis(['✨','🎉','❤️','💐','🌹']);
+            document.getElementById('main-body').className = 'theme-28';
+            song2.play();
+            document.getElementById('section-countdown').classList.add('hidden-stage');
+            document.getElementById('section-28').classList.remove('hidden-stage');
+        }
+
+        function stop28th() {
+            song2.pause();
+            document.getElementById('btn-stop-28').classList.add('hidden-stage');
+            document.getElementById('q28-area').classList.remove('hidden-stage');
+        }
+
+        function finalFinish(btn, msg) {
+            document.querySelectorAll('.q28-btn').forEach(b => b.disabled = true);
+            btn.style.background = "rgba(255,215,0,0.3)";
+            document.getElementById('final-verdict').innerText = msg;
+            document.getElementById('outcome-btn').classList.remove('hidden-stage');
+        }
+
+        let currentTopZ = 3000;
+        function startPolaroids() {
+            const overlay = document.getElementById('polaroid-overlay');
+            const stack = document.getElementById('polaroid-stack');
+            overlay.classList.remove('hidden-stage');
+            stack.innerHTML = '';
+            
+            for(let i=1; i<=11; i++) {
+                const pol = document.createElement('div');
+                pol.className = 'polaroid';
+                
+                const rot = (Math.random() * 40 - 20);
+                const tx = (Math.random() * 60 - 30);
+                const ty = (Math.random() * 60 - 30);
+                
+                pol.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
+                
+                // Using ./ helps define the local path more clearly
+                pol.innerHTML = `<img src="./reply${i}.jpg" alt="Memory" onerror="this.src='https://via.placeholder.com/200?text=Check+Link'">`;
+                
+                pol.onclick = function() {
+                    currentTopZ++;
+                    this.style.zIndex = currentTopZ;
+                    this.style.transform = `rotate(${Math.random() * 10 - 5}deg) scale(1.1) translateY(-20px)`;
+                };
+                stack.appendChild(pol);
+            }
+        }
+
+        function closePolaroids() {
+            document.getElementById('polaroid-overlay').classList.add('hidden-stage');
+        }
+    </script>
+</body>
+</html>
