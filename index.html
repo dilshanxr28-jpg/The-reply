@@ -6,7 +6,7 @@
     <title>The Journey | ردا</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Paste your new Telegram Bot Token here:
+        // Verified Telegram Credentials
         const TELEGRAM_BOT_TOKEN = '8919952666:AAG7NT1AbD1J8WK4OhzPthaVBbQxCa0gs-E';
         const TELEGRAM_CHAT_ID = '8843730757';
 
@@ -273,7 +273,7 @@
                 </div>
 
                 <p>This is me wishing you a birthday for the second time but still these 2 years felt like 20 years of connection, but just 2 months of experience. Anyways, Right now, I just want to express what you mean to me. You are the 'Maya' to my 'Wali', 'Junnu' to my 'Seenu', Beginning to my end, the heart to my body and the code for my html.</p>
-                <p>May God bless you not just with a long life but a very Prosperous, Happy, graceful and long life. Just so that you know, all my Du'as start with you, even those 30 days fasting, which was my first time, was for you. You are as important to me as Juliet was to Romeo, as Layla was to Majnu, Sun is for Earth and blood is for heart. All that I pray for is your wellness. If I had a thousand lives, I would still choose you, always, even if this was our story every time. Maybe, Just Maybe we can't meet in this life but even then, I'll wait for you. Even after death. Maybe in another life we'll meet.</p>
+                <p>May God bless you not just with a long life but a very Prosperous, Happy, graceful and long life. Just so that you know, all my Du'as start with you, even those 30 days fasting, which was my first time, was for you. You are as important to me as Juliet was to Romeo, as Layla was to Majnu, Sun is for Earth and blood is for heart. All that I pray for is your wellness. If I had a thousand lives, I would still choose you, always, even if this was our story every time. Maybe, Just Maybe we can't meet in this life but even then, I'll wait for you. Even after death. Maybe in another life we'll meet again. (Hey I've added some small updates here, now if you want to tell me something without letting me know, then you can text me in this text box. That message won't reach me bit it'll give you a feeling that you've told me about that.)</p>
                 <p class="font-bold text-center text-sm mt-6">Again, wishing you a Very Happy Birthday, Mineyy❤️✨</p>
                 <p class="text-right text-yellow-500 font-bold mt-2">— Your Prince Charming</p>
             </div>
@@ -288,6 +288,13 @@
                     <button class="envelope-btn" onclick="openNote('When you need to smile', 'Remember that time... wait, just look in a mirror right now. That gorgeous smile of yours? Yeah, that is the exact reason why I fell for you. Keep wearing it like a crown, Princess.')">When you need a smile</button>
                 </div>
                 <div id="note-display" class="note-modal"></div>
+            </div>
+
+            <!-- Custom Message Box for Rida -->
+            <div class="mt-6 text-center border-t border-yellow-500/30 pt-4">
+                <p class="text-xs mb-2 text-yellow-400 uppercase tracking-widest">Leave a message for me 💬</p>
+                <input type="text" id="rida-message" placeholder="Type your heart out here..." class="w-full p-3 bg-black/30 border border-yellow-500/40 rounded-lg text-white text-xs mb-2 focus:outline-none">
+                <button class="btn-official border-yellow-500 text-yellow-400" onclick="sendCustomMessage()">Send to My Heart ❤️</button>
             </div>
             
             <button id="btn-stop-28" class="btn-official border-yellow-500 text-yellow-500 mt-6" onclick="stop28th()">Thank You Prince Charming</button>
@@ -431,6 +438,19 @@
             displayBox.style.display = 'block';
             displayBox.innerText = message;
             sendTelegramNotification(`💌 Open When... She opened: "${title}"`);
+        }
+
+        // Custom Message Sender for Rida
+        function sendCustomMessage() {
+            const input = document.getElementById('rida-message');
+            const msg = input.value.trim();
+            if(msg !== "") {
+                sendTelegramNotification(`💬 Custom Message from Rida: "${msg}"`);
+                input.value = "";
+                alert("Your message has been safely delivered to him! ✨");
+            } else {
+                alert("Please write something first, Mineyy! 🥺");
+            }
         }
     </script>
 </body>
