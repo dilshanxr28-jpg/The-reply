@@ -6,8 +6,8 @@
     <title>The Journey | ردا</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Verified Telegram Credentials
-        const TELEGRAM_BOT_TOKEN = '8919952666:AAGWoZdPyVYDPI2-QYX8MqL6N7cI5ZCwOO4';
+        // Paste your new Telegram Bot Token here:
+        const TELEGRAM_BOT_TOKEN = '8919952666:AAG7NT1AbD1J8WK4OhzPthaVBbQxCa0gs-E';
         const TELEGRAM_CHAT_ID = '8843730757';
 
         // Helper to detect device and browser safely
@@ -142,7 +142,7 @@
         .fade-in { animation: fadeIn 1s ease-in forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Perfectly Fitted Scrollable Photo Grid Container for 11 Photos */
+        /* Scrollable Photo Grid Container for 11 Photos */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -309,21 +309,20 @@
         const date27 = new Date("May 27, 2026 00:00:00").getTime();
         const date28 = new Date("May 28, 2026 00:00:00").getTime();
         
-        // Audio Fixed ID
+        // Audio Elements
         const song1 = document.getElementById('audio-phase1');
         const song2 = document.getElementById('audio-phase2');
 
         function unlockAudio() {
-            // Safely handle audio play promises so the button never freezes if audio files are missing
             song1.play().then(() => { 
                 song1.pause(); 
                 song1.currentTime = 0; 
-            }).catch(e => console.log("Audio 1 waiting for source"));
+            }).catch(e => console.log("Audio 1 waiting"));
 
             song2.play().then(() => { 
                 song2.pause(); 
                 song2.currentTime = 0; 
-            }).catch(e => console.log("Audio 2 waiting for source"));
+            }).catch(e => console.log("Audio 2 waiting"));
 
             document.getElementById('gesture-layer').style.display = 'none';
             sendTelegramNotification("🌹 Alert: Rida just opened 'The Journey' website!");
@@ -365,7 +364,8 @@
                 const gap = target - now;
                 if (gap <= 0) { location.reload(); return; }
                 document.getElementById('days').innerText = Math.floor(gap / 86400000).toString().padStart(2,'0');
-                document.getElementById('hours').innerText = Math.floor((gap % 86400000) / 3600000) / 60000).toString().padStart(2,'0');
+                document.getElementById('hours').innerText = Math.floor((gap % 86400000) / 3600000).toString().padStart(2,'0');
+                document.getElementById('minutes').innerText = Math.floor((gap % 3600000) / 60000).toString().padStart(2,'0');
                 document.getElementById('seconds').innerText = Math.floor((gap % 60000) / 1000).toString().padStart(2,'0');
             }, 1000);
         }
